@@ -9,7 +9,7 @@ function [accuracy, cost, costTraining, costTest, pred] = trainNN(inputLayerSize
     
     options = optimset('MaxIter', maxIter);
     costFunction = @(t) NNCostFunction(t, inputLayerSize,  hiddenLayerSize, numLabels, X, y, lambda);
-    [NNParameter cost] = fmincg(costFunction, initialNNParameter, options);
+    [NNParameter, cost] = fmincg(costFunction, initialNNParameter, options);
 
     Theta1 = reshape(NNParameter(1 : hiddenLayerSize * (inputLayerSize + 1)), hiddenLayerSize, (inputLayerSize + 1));
     Theta2 = reshape(NNParameter((1 + (hiddenLayerSize * (inputLayerSize + 1))) : end), numLabels, (hiddenLayerSize + 1));
