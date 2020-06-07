@@ -12,32 +12,8 @@ hiddenLayerSize = input('Please input the number of units in the hidden layer(bi
 
 %% Load Data and Separate
 fprintf('\nLoading training data...\n');
-X = [];
-y = [];
-Xtest = [];
-ytest = [];
-XtestPath = [];
 
-for i = 1 : 10
-    numPath = strcat('dataSet\', num2str(i), '\');
-    imgList = dir(strcat(numPath, '*.jpg')); % This is a list of 'struct'.
-    imgList = imgList(randperm(length(imgList)), :);
-    imgLen = length(imgList);
-    
-    for j = 1 : int8(imgLen * 0.7)
-        imgPath = strcat(numPath, imgList(j).name);
-        X = [X; imgProcess(imgPath,20)];
-        y = [y; i];
-    end
-    for j = int8(imgLen * 0.7) + 1 : imgLen
-        imgPath = string(strcat(numPath, imgList(j).name));
-        XtestPath = [XtestPath imgPath];
-        Xtest = [Xtest; imgProcess(imgPath,20)];
-        ytest = [ytest; i];
-    end
-end
-
-save('dataSet.mat', 'X', 'y', 'Xtest', 'ytest');
+[X, y, XtestPath] = loadData(20);
 
 fprintf('Data loaded. Press enter to continue.\n');
 pause;
@@ -49,7 +25,7 @@ maxIter = input('Please input maximum iterations: ');
 [accuracy, cost, ~, ~, pred] = trainNN(inputLayerSize, numLabels, lambda, hiddenLayerSize, X, y, maxIter);
 
 figure(1);
-plot(1 : 1 : maxIter, cost);
+plot(1 : maxIter, cost);
 title('Cost per Iteration');
 xlabel('Iteration');
 ylabel('Cost');
@@ -120,6 +96,7 @@ setSizeArray = 1 : size(X, 1);
 costTrainingArray = [];
 costTestArray = [];
 accuracyArray = [];
+hiddenLayerSize = 20; % Ideally this should set to over 20.
 lambda = 1; % Feel free to change this.
 maxIter = 1000; % Ideally this should set to over 1000.
 
@@ -150,4 +127,26 @@ subplot(1, 2, 2);
 plot(setSizeArray, accuracyArray);
 title('Accuracy per Training Set Size');
 xlabel('Training Set Size');
+ylabel('Accuracy');
+
+%% Further Study: Input Layer
+inputLayerSizeArray = (1 : 20) * 2;
+accuracyArray = [];
+hiddenLayerSize = 20;
+lambda = 1; % Feel free to change this.
+maxIter = 1000; % Ideally this should set to over 1000.
+
+for size = inputLayerSizeArray
+    
+    inputLayerSize = size^2;
+    [X, y] = loadData(size);
+
+    accuracy = trainNN(inputLayerSize, numLabels, lambda, hiddenLayerSize, X, y, maxIter);
+    accuracyArray = [accuracyArray accuracy];
+end
+
+figure(5);
+plot(inputLayerSizeArray, accuracyArray);
+title('Accuracy per Input Layer Size');
+xlabel('Input Layer Size');
 ylabel('Accuracy');
