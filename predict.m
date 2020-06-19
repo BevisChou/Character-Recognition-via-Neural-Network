@@ -1,8 +1,10 @@
-function p = predict(Theta1, Theta2, X)  
+function p = predict(nnParameter, layerSizes, X)
+    Theta = reshapeTheta(nnParameter, layerSizes);
     m = size(X, 1);
-    
-    a2 = sigmoid([ones(m, 1) X] * Theta1');
-    hypo = sigmoid([ones(m, 1) a2] * Theta2');
-    
-    [~, p] = max(hypo, [], 2);
+    ThetaSize = size(Theta, 2);
+    a = X;
+    for i = 1 : ThetaSize
+        a = sigmoid([ones(m, 1) a] * Theta{i}');
+    end
+    [~, p] = max(a, [], 2);
 end
