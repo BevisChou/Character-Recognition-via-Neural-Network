@@ -1,23 +1,33 @@
-function [X, y, labels, paths] = loadData(weights, compressSize)
+function [X, y, labels, paths] = loadData(layerSizes, weights, compressSize)
+    
+    if size(layerSizes, 1) ~= 1 || size(layerSizes, 2) < 3
+        error('Please make sure that layerSizes is a one-by-n matrix, where n is greater than or equal to 3.');
+    end
     
     if size(weights, 1) ~= 1 || min(weights) <= 0 || sum(weights) ~= 1
         error('Please ensure the elements in weights range from 0 to 1, and the sum of them is 1.');
     end
     
-    if size(compressSize, 1) ~= 1 ||size(compressSize, 2) ~= 2
-        error('Please check the size of parameters.');
+    if size(compressSize, 1) ~= 1 || size(compressSize, 2) ~= 2
+        error('Please make sure that compressSize is a one-by-two matrix');
     end
     
-    if compressSize(1) < 1 || compressSize(2) < 1
-        error('Please check the input parameters.');
+    if logical(mean(layerSizes ~= fix(layerSizes))) || logical(mean(compressSize ~= fix(compressSize))) || logical(mean(layerSizes > 0) ~= 1) || logical(mean(compressSize > 0) ~= 1)
+        error('Please make sure that the elements in layerSizes and compressSize should be positive integer.');
     end
     
-    len = uint16(compressSize(1));
-    wid = uint16(compressSize(2));
+    if compressSize(1) * compressSize(2) ~= layerSizes(1)
+        error('Please make sure that the product of the two elements in compressSize should be equal to the first element of layerSizes.');
+    end
     
     folderList = dir('dataSet');
     folderList = folderList(~ismember({folderList.name},{'.','..'})); % Getting rid of '.' and '..', caused by dir().
     labelsSize = size(folderList);
+    
+    if labelsSize ~= layerSizes(end)
+        error('Please make sure that labelsSize is equal to the last element of layerSizes.');
+    end
+    
     weightsSize = size(weights, 2);
     X = cell(1, weightsSize);
     y = cell(1, weightsSize);
@@ -47,7 +57,7 @@ function [X, y, labels, paths] = loadData(weights, compressSize)
         for j = 1 : weightsSize
             for k = index : index + numList(j) - 1
                 imgPath = string(strcat('dataSet\', folderList(i).name, '\', imgList(k).name));
-                X{j} = [X{j}; imgProcess(imgPath, len, wid)];
+                X{j} = [X{j}; imgProcess(imgPath, compressSize(1), compressSize(2))];
                 y{j} = [y{j}; i];
                 paths{j} = [paths{j} imgPath];
              end
