@@ -6,13 +6,13 @@ pause;
 %% Set Up Parameters
 fprintf('\nSetting up parameters for the neural network...\n');
 layerSizes = [400 25 10];
+weights = [0.7 0.3];
+compressSize = [20 20];
 
 %% Load Data and Separate
 fprintf('\nLoading training data...\n');
 
-weights = [0.7 0.3];
-compressSize = [20 20];
-[X, y, labels, paths] = loadData(weights, compressSize);
+[X, y, labels, paths] = loadData(layerSizes, weights, compressSize);
 
 fprintf('Data loaded. Press enter to continue.\n');
 pause;
