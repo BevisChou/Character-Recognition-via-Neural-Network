@@ -29,8 +29,12 @@ function [J, grad] = nnCostFunction(nnParameter, layerSizes, X, y, lambda)
         
         delta{end} = h - yVec;
         ThetaGrad{end} = ThetaGrad{end} + delta{end} * a{end - 1}(:, i)';
-        for j = 1 : ThetaSize - 1
-            delta{end - j} = Theta{end - j + 1}' * delta{end - j + 1} .* sigmoidGradient([1; z{end - j}(:, i)]);
+        
+        delta{end - 1} = Theta{end}' * delta{end} .* sigmoidGradient([1; z{end - 1}(:, i)]);
+        ThetaGrad{end - 1} = ThetaGrad{end - 1} + delta{end - 1}(2 : end, :) * a{end - 2}(:, i)';
+        
+        for j = 2 : ThetaSize - 1
+            delta{end - j} = Theta{end - j + 1}' * delta{end - j + 1}(2 : end, :) .* sigmoidGradient([1; z{end - j}(:, i)]);
             ThetaGrad{end - j} = ThetaGrad{end - j} + delta{end - j}(2 : end, :) * a{end - j - 1}(:, i)';
         end
     end
